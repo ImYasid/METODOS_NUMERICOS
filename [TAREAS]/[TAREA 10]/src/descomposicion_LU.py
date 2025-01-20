@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Python 3
-28 / 07 / 2024
-@author: Leandro_Bravo
-
-"""
 
 # ----------------------------- logging --------------------------
 import logging
@@ -28,9 +22,7 @@ def descomposicion_LU(A: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     ``U``: matriz triangular superior. Se obtiene de la matriz ``A`` después de aplicar la eliminación gaussiana.
     """
 
-    A = np.array(
-        A, dtype=float
-    )  # convertir en float, porque si no, puede convertir como entero
+    A = np.array(A, dtype=float)  # convertir en float, porque si no, puede convertir como entero
 
     assert A.shape[0] == A.shape[1], "La matriz A debe ser cuadrada."
     n = A.shape[0]
@@ -48,9 +40,7 @@ def descomposicion_LU(A: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         for j in range(i + 1, n):
             m = A[j, i] / A[i, i]
             A[j, i:] = A[j, i:] - m * A[i, i:]
-
             L[j, i] = m
-
 
     if A[n - 1, n - 1] == 0:
         raise ValueError("No existe solución única.")
@@ -73,45 +63,23 @@ def resolver_LU(L: np.ndarray, U: np.ndarray, b: np.ndarray) -> np.ndarray:
     ## Return
 
     ``solucion``: vector con la solución del sistema de ecuaciones lineales.
-
     """
 
-    # Completar
-    print("Calculando y")
-    
-     # --- Sustitución hacia atrás
+    # Sustitución hacia adelante
     n = L.shape[0]
-    solucion = np.zeros(n)
-    solucion[0] = b[0] / L[0, 0]
+    y = np.zeros(n)
+    y[0] = b[0] / L[0, 0]
 
-    for i in range(1,n):
-        suma = 0
-        for j in range(i):
-            suma += L[i, j] * solucion[j]
-        solucion[i] = (b[i] - suma) / L[i, i]
-    
-    print("y")
-    print(solucion)
-    print("Verificación Ly=b:")
-    verif_y = np.matmul(L, solucion)
-    print(verif_y)
-    
-    print("Calculando x") 
-    # --- Sustitución hacia atrás
-    solucion_f = np.zeros(n, dtype=float)
-    solucion_f[n-1] = solucion[n-1] / U[n-1, n-1]
+    for i in range(1, n):
+        suma = sum(L[i, j] * y[j] for j in range(i))
+        y[i] = (b[i] - suma) / L[i, i]
 
-    for i in range(n-2,-1,-1):
-        suma = 0
-        for j in range(i+1, n):
-            suma += U[i, j] * solucion_f[j]
-        solucion_f[i] = (solucion[i] - suma) / U[i, i]
-    
-    print("x")
-    print(solucion_f)
-    print("Verificación Ux=y:")
-    verif_x = np.matmul(U, solucion_f)
-    
-    print(verif_x)
-                 
-    return
+    # Sustitución hacia atrás
+    x = np.zeros(n, dtype=float)
+    x[n - 1] = y[n - 1] / U[n - 1, n - 1]
+
+    for i in range(n - 2, -1, -1):
+        suma = sum(U[i, j] * x[j] for j in range(i + 1, n))
+        x[i] = (y[i] - suma) / U[i, i]
+
+    return x

@@ -1,0 +1,2 @@
+from .gauss_Jacobi import gauss_jacobi,gauss_jacobi_iteraciones
+from .gauss_Seidel import gauss_seidel,gauss_seidel_iteraciones,es_diagonal_estrictamente_dominante
